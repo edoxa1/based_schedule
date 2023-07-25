@@ -8,9 +8,9 @@ from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from tgbot.config import load_config
 from tgbot.filters.admin import AdminFilter
 from tgbot.handlers.admin import register_admin
-from tgbot.handlers.echo import register_echo
 from tgbot.handlers.user import register_user
 from tgbot.middlewares.environment import EnvironmentMiddleware
+from tgbot.misc.set_base_commands import set_default_commands
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,11 @@ def register_all_handlers(dp):
     register_admin(dp)
     register_user(dp)
 
-    register_echo(dp)
+
+async def on_startup(dp: Dispatcher, config):
+    await set_default_commands(dp)
+    for uid in config.tg_bot.admin_ids:
+        await dp.bot.send_message(text="Bot started", chat_id=uid)
 
 
 async def main():
@@ -48,6 +52,7 @@ async def main():
     register_all_filters(dp)
     register_all_handlers(dp)
 
+    await on_startup(dp, config)
     # start
     try:
         await dp.start_polling()
