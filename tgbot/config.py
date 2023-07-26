@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from environs import Env
-
+from tgbot.services.table import Table
 
 @dataclass
 class DbConfig:
@@ -27,10 +27,11 @@ class Miscellaneous:
 class Config:
     tg_bot: TgBot
     db: DbConfig
+    table: Table
     misc: Miscellaneous
 
 
-def load_config(path: str = None):
+def load_config(pdf_path: str, path: str = None):
     env = Env()
     env.read_env(path)
 
@@ -46,5 +47,6 @@ def load_config(path: str = None):
             user=env.str('DB_USER'),
             database=env.str('DB_NAME')
         ),
-        misc=Miscellaneous()
+        misc=Miscellaneous(),
+        table=Table(pdf_path)
     )
