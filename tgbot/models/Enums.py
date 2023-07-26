@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Columns(Enum):
+class Column(Enum):
     ABBR = 0
     CTYPE = 1
     TITLE = 2
