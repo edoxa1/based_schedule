@@ -64,3 +64,10 @@ venv.bak/
 
 #
 *.swp
+
+# jupyter-notebook
+./tgbot/services/.ipynb_checkpoints
+*.ipynb
+
+*.pdf
+
