@@ -14,10 +14,11 @@ class CallbackDataFilter(BoundFilter):
         if not self.callback_data:
             return False
 
-        if isinstance(self.callback_data, List[str]):
+        if isinstance(self.callback_data, list):
             return obj.data in self.callback_data
-        
-        return obj.data.__eq__(self.callback_data)
+
+        print(obj.data == self.callback_data)
+        return obj.data == self.callback_data
 
 
 class CallbackDataBeginsWithFilter(BoundFilter):

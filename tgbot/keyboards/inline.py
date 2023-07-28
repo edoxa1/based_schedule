@@ -27,7 +27,7 @@ def generate_course_selection_keyboard(abbr: str, page: str, size: str):
 def generate_constructor_menu_keyboard() -> InlineKeyboardMarkup:
     kb = InlineKeyboardMarkup(row_width=2)
     kb.add(
-        InlineKeyboardButton(text="Cart", callback_data="constructor:menu"),
+        InlineKeyboardButton(text="Cart", callback_data="constructor:cart"),
         InlineKeyboardButton(text="Import", callback_data="constructor:import"),
         InlineKeyboardButton(text="Back", callback_data="constructor:back"))
     

@@ -3,18 +3,18 @@ from typing import List
 from aiogram import Dispatcher
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from tgbot.keyboards import inline, reply
 from tgbot.models.Course import Course
 from tgbot.services.table import Table
+from tgbot.services.cart_controller import CartController
 
 
 class CourseSelectionForm(StatesGroup):
-    user_course_abbr: str = State()
-    selected_course_abbr: str = State()
-    selected_course_type: Course = State()
+    user_course_abbr = State()
+    selected_course_abbr = State()
+    selected_course_type = State()
 
 
 async def start_constructor(message: Message):
@@ -25,7 +25,7 @@ async def start_constructor(message: Message):
 
 async def get_user_abbr(message: Message, state: FSMContext):
     table: Table = message.bot['config'].table
-    abbr = message.text
+    abbr = message.text.lower().replace(' ', '')
     courses: List[Course] = table.search_by_abbr(abbr)
    
     if not courses:
@@ -52,7 +52,8 @@ async def course_abbr_selection(message: Message, state: FSMContext):
     
     courses: List[Course] = table.get_course_types(abbr)
     if not courses:
-        await message.answer("Not found")
+        await CourseSelectionForm.previous()
+        await get_user_abbr(message, state)
         return
     
     text = ""
@@ -76,12 +77,21 @@ async def course_type_selection(message: Message, state: FSMContext):
     kb = inline.generate_constructor_menu_keyboard()
     
     async with state.proxy() as data:
-        print(data['selected_course_abbr'], ctype)
         course: Course = table.get_course_by_ctype(data['selected_course_abbr'], ctype)
+        if not course:
+            await state.set_state(CourseSelectionForm.user_course_abbr.state)
+            await get_user_abbr(message, state)
+            return
+
+        print(data['selected_course_abbr'], ctype)
         data['course'] = course
         
-    await message.answer(f"Course {course.abbr} added to cart!", reply_markup=kb)   
-    await state.finish()
+    await message.answer(f"Course {course.abbr} [{course.course_type}] was added to cart!", reply_markup=kb)
+    # process adding to cart
+    cart_controller: CartController = message.bot['config'].cart_controller
+    cart_controller.add_user(message.from_id, created=message.date)
+    cart_controller.add_course(message.from_id, course)
+    await state.set_state(CourseSelectionForm.user_course_abbr.state)
 
 
 async def cancel_form(message: Message, state: FSMContext):
@@ -93,9 +103,19 @@ async def cancel_form(message: Message, state: FSMContext):
     await state.finish()
 
 
+async def show_cart(call: CallbackQuery):
+    cart_controller: CartController = call.bot['config'].cart_controller
+    # await call.message.answer(text=)
+    await call.answer("Done.")
+
+
 def register_handlers(dp: Dispatcher):
+    # callbacks
+    dp.register_callback_query_handler(show_cart, callback_data="constructor:cart", state="*")
+    # messages
     dp.register_message_handler(start_constructor, commands=["construct"])
     dp.register_message_handler(get_user_abbr, state=CourseSelectionForm.user_course_abbr)
     dp.register_message_handler(course_abbr_selection, state=CourseSelectionForm.selected_course_abbr)
     dp.register_message_handler(course_type_selection, state=CourseSelectionForm.selected_course_type)
     dp.register_message_handler(cancel_form, commands=["/cancel"], state="*")
+

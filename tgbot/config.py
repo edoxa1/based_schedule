@@ -1,7 +1,10 @@
 from dataclasses import dataclass
 
 from environs import Env
+
+from tgbot.services.cart_controller import CartController
 from tgbot.services.table import Table
+
 
 @dataclass
 class DbConfig:
@@ -28,6 +31,7 @@ class Config:
     tg_bot: TgBot
     db: DbConfig
     table: Table
+    cart_controller: CartController
     misc: Miscellaneous
 
 
@@ -48,5 +52,6 @@ def load_config(pdf_path: str, path: str = None):
             database=env.str('DB_NAME')
         ),
         misc=Miscellaneous(),
-        table=Table(pdf_path)
+        table=Table(pdf_path),
+        cart_controller=CartController()
     )

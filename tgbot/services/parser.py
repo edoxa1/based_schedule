@@ -27,18 +27,18 @@ class PdfParser:
         courses: List[Course] = []
         for page in self.pdf_json:
             for row in page['data']:
-                variables = (self._get_abbr(row), self._get_ctype(row), self._get_title(row),
-                             self._get_credits_us(row), self._get_credits_eu(row), self._get_start_date(row),
-                             self._get_end_date(row), self._get_weekdays(row), self._get_time(row),
-                             self._get_enrolled(row), self._get_course_capacity(row),
-                             self._get_faculty(row), self._get_room(row))  # WHAT THE FUCK
+                variables = (self.__get_abbr(row), self.__get_ctype(row), self.__get_title(row),
+                             self.__get_credits_us(row), self.__get_credits_eu(row), self.__get_start_date(row),
+                             self.__get_end_date(row), self.__get_weekdays(row), self.__get_time(row),
+                             self.__get_enrolled(row), self.__get_course_capacity(row),
+                             self.__get_faculty(row), self.__get_room(row))  # WHAT THE FUCK
 
                 (abbr, ctype, title, cus, ceu, start_date, end_date, days, times, enr, cap, faculty, room) = variables
 
                 if not abbr:
                     last_course = courses.pop()
-                    last_course.weekdays = last_course.weekdays + "_" + days
-                    last_course.time = last_course.time + "_" + times
+                    last_course.weekdays.append(days)
+                    last_course.time.append(times)
                     last_course.faculty = last_course.faculty + " " + faculty
                     last_course.room = last_course.room + " " + room
                     courses.append(last_course)
@@ -51,43 +51,43 @@ class PdfParser:
         courses.pop(0)
         return courses
 
-    def _get_abbr(self, row: List[Dict[str, any]]) -> str:
+    def __get_abbr(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.ABBR)
 
-    def _get_ctype(self, row: List[Dict[str, any]]) -> str:
+    def __get_ctype(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.CTYPE)
 
-    def _get_title(self, row: List[Dict[str, any]]) -> str:
+    def __get_title(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.TITLE)
 
-    def _get_credits_us(self, row: List[Dict[str, any]]) -> str:
+    def __get_credits_us(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.CRED_US)
 
-    def _get_credits_eu(self, row: List[Dict[str, any]]) -> str:
+    def __get_credits_eu(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.CRED_EU)
 
-    def _get_start_date(self, row: List[Dict[str, any]]) -> str:
+    def __get_start_date(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.START)
 
-    def _get_end_date(self, row: List[Dict[str, any]]) -> str:
+    def __get_end_date(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.END)
 
-    def _get_weekdays(self, row: List[Dict[str, any]]) -> str:
+    def __get_weekdays(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.DAYS)
 
-    def _get_time(self, row: List[Dict[str, any]]) -> str:
+    def __get_time(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.TIME)
 
-    def _get_enrolled(self, row: List[Dict[str, any]]) -> str:
+    def __get_enrolled(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.ENR)
 
-    def _get_course_capacity(self, row: List[Dict[str, any]]) -> str:
+    def __get_course_capacity(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.CAP)
 
-    def _get_faculty(self, row: List[Dict[str, any]]) -> str:
+    def __get_faculty(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.FACULTY)
 
-    def _get_room(self, row: List[Dict[str, any]]) -> str:
+    def __get_room(self, row: List[Dict[str, any]]) -> str:
         return self.get_column(row, Column.ROOM)
 
     @staticmethod
