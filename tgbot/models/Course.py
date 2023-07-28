@@ -16,7 +16,10 @@ class Course:
         self.enrolled: str = enrolled
         self.course_capacity: str = course_capacity
         self.faculty: str = faculty
-        self.room: str = room
+        try:
+            self.room: str = room.split('-')[0].strip()
+        except ValueError:
+            self.room = room
 
     def get_info(self) -> str:
         text = f'{self.abbr} [{self.course_type}] - {self.title} \n{self.credits_eu} ECTS\n' \
@@ -24,6 +27,20 @@ class Course:
             f'{self.weekdays} - {self.time}\n' \
             f'{self.enrolled}/{self.course_capacity}\n' \
             f'{self.faculty}\n' \
-            f'{self.room}\n'
+            f'{self.room}\n\n'
+        
+        return text
+
+    def get_info_short(self) -> str:
+        text = f'{self.abbr} [{self.course_type}]\n' \
+            f'{self.weekdays}: {self.time}\n' \
+            f'{self.enrolled}/{self.course_capacity}\n' \
+            f'{self.faculty} | {self.room}\n\n'
+            
+        return text
+
+    def get_course_overall_info(self) -> str:
+        text = f'{self.abbr} - {self.title} | ' \
+            f'{self.credits_eu} ECTS\n\n'
         
         return text
