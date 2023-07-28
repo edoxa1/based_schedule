@@ -20,34 +20,34 @@ class PdfParser:
         # noinspection PyTypeChecker
         courses_json: List[Dict[str, any]] = read_pdf(self.path, pandas_options=coursed_options, pages='all',
                                                       output_format='json', lattice=True, stream=False)
-        
+
         return courses_json
 
     def get_courses_list(self) -> List[Course]:
         courses: List[Course] = []
         for page in self.pdf_json:
             for row in page['data']:
-                vars = (self._get_abbr(row), self._get_ctype(row), self._get_title(row),
-                self._get_credits_us(row), self._get_credits_eu(row), self._get_start_date(row),
-                self._get_end_date(row), self._get_weekdays(row), self._get_time(row),
-                self._get_enrolled(row), self._get_course_capacity(row),
-                self._get_faculty(row), self._get_room(row))  # WHAT THE FUCK
-                
-                (abbr, ctype, title, cus, ceu, start_date, end_date, days, times, enr, cap, faculty, room) = vars
-                
+                variables = (self._get_abbr(row), self._get_ctype(row), self._get_title(row),
+                             self._get_credits_us(row), self._get_credits_eu(row), self._get_start_date(row),
+                             self._get_end_date(row), self._get_weekdays(row), self._get_time(row),
+                             self._get_enrolled(row), self._get_course_capacity(row),
+                             self._get_faculty(row), self._get_room(row))  # WHAT THE FUCK
+
+                (abbr, ctype, title, cus, ceu, start_date, end_date, days, times, enr, cap, faculty, room) = variables
+
                 if not abbr:
                     last_course = courses.pop()
-                    last_course.weekdays = last_course.weekdays.join(days)
-                    last_course.time = last_course.time.join(times)
-                    last_course.faculty = last_course.faculty.join(faculty)
-                    last_course.room = last_course.room.join(room)
+                    last_course.weekdays = last_course.weekdays + "_" + days
+                    last_course.time = last_course.time + "_" + times
+                    last_course.faculty = last_course.faculty + " " + faculty
+                    last_course.room = last_course.room + " " + room
                     courses.append(last_course)
                     continue
-                
+
                 temp = Course(abbr, ctype, title, cus, ceu, start_date, end_date, days, times, enr, cap, faculty, room)
-                
+
                 courses.append(temp)
-        
+
         courses.pop(0)
         return courses
 
@@ -94,14 +94,13 @@ class PdfParser:
     def get_column(row: List[Dict[str, any]], column: Column) -> str:
         cid = column.value
         temp = ''
-        try: 
+        try:
             temp = row[cid]['text'].replace('\r', ' ')
         except Exception as e:
             print(e)
             # print(cid, row)
             temp = "-"
-            
+
         return temp
-    
 
 # registrar PCC
