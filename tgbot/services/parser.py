@@ -20,8 +20,7 @@ class PdfParser:
         # noinspection PyTypeChecker
         courses_json: List[Dict[str, any]] = read_pdf(self.path, pandas_options=coursed_options, pages='all',
                                                       output_format='json', lattice=True, stream=False)
-        print(courses_json)
-
+        
         return courses_json
 
     def get_courses_list(self) -> List[Course]:
@@ -49,6 +48,7 @@ class PdfParser:
                 
                 courses.append(temp)
         
+        courses.pop(0)
         return courses
 
     def _get_abbr(self, row: List[Dict[str, any]]) -> str:
@@ -102,3 +102,6 @@ class PdfParser:
             temp = "-"
             
         return temp
+    
+
+# registrar PCC
