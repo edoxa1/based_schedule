@@ -1,4 +1,3 @@
-from typing import List
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -32,7 +31,3 @@ def generate_constructor_menu_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="Back", callback_data="constructor:back"))
     
     return kb
-
-
-def by_ascii_sum(word):
-    return sum([ord(c) for c in word])  # ord(c) returns ascii value

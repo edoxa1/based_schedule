@@ -91,6 +91,7 @@ async def course_type_selection(message: Message, state: FSMContext):
     cart_controller: CartController = message.bot['config'].cart_controller
     cart_controller.add_user(message.from_id, created=message.date)
     cart_controller.add_course(message.from_id, course)
+    # return back to initial state
     await state.set_state(CourseSelectionForm.user_course_abbr.state)
 
 
@@ -105,7 +106,8 @@ async def cancel_form(message: Message, state: FSMContext):
 
 async def show_cart(call: CallbackQuery):
     cart_controller: CartController = call.bot['config'].cart_controller
-    # await call.message.answer(text=)
+    cart = cart_controller.get_user_cart(call.from_user.id)
+    await call.message.answer(text=cart.info())
     await call.answer("Done.")
 
 
@@ -113,9 +115,10 @@ def register_handlers(dp: Dispatcher):
     # callbacks
     dp.register_callback_query_handler(show_cart, callback_data="constructor:cart", state="*")
     # messages
+    dp.register_message_handler(cancel_form, commands=["cancel"], state="*")
     dp.register_message_handler(start_constructor, commands=["construct"])
     dp.register_message_handler(get_user_abbr, state=CourseSelectionForm.user_course_abbr)
     dp.register_message_handler(course_abbr_selection, state=CourseSelectionForm.selected_course_abbr)
     dp.register_message_handler(course_type_selection, state=CourseSelectionForm.selected_course_type)
-    dp.register_message_handler(cancel_form, commands=["/cancel"], state="*")
+    
 

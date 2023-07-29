@@ -27,11 +27,18 @@ class Cart:
         except ValueError:
             return False
 
-    def clear_cart(self):
+    def clear(self):
         self.courses_list.clear()
         self.__update_datetime()
         return True
 
+    def info(self):
+        text = 'Your cart:\n' if len(self.courses_list) > 0 else 'You have no courses in cart'
+        for course in self.courses_list:
+            text += f'{course.get_info_short()}'
+            
+        return text
+    
     def __update_datetime(self):
         self.last_updated = datetime.now()
 

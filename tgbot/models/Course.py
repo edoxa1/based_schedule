@@ -37,8 +37,7 @@ class Course:
     def get_info_short(self) -> str:
         text = f'{self.abbr} [{self.course_type}]\n' \
             f'{self.weekdays}: {self.time}\n' \
-            f'{self.enrolled}/{self.course_capacity}\n' \
-            f'{self.faculty} | {self.room}\n\n'
+            f'{self.faculty} | {self.room}\n\n'  # f'{self.enrolled}/{self.course_capacity}\n' \
             
         return text
 

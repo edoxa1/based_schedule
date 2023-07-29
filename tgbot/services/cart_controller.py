@@ -15,17 +15,30 @@ class CartController:
         })
 
     def add_course(self, user_id: int, course: Course) -> bool:
-        for cart in self.user_carts:
+        cart = self.get_user_cart(user_id)
+        if not cart:
+            raise Exception(f"User {user_id} not found in cart list")
+        
+        cart.add(course)
+    
+    def delete_user(self, user_id: int):
+        for index, cart in enumerate(self.user_carts):
             if user_id == cart['user_id']:
-                cart['cart'].add(course)
-                return True
-
-        raise Exception(f"User {user_id} not found in cart list")
-
-    def delete_course(self, user_id: int, course: Course):
-        for cart in self.user_carts:
-            if user_id == cart['user_id']:
-                cart['cart'].remove(course)
+                self.user_carts.pop(index)
                 return
 
         raise Exception(f"User {user_id} not found in cart list")
+    
+    def delete_course(self, user_id: int, course: Course):
+        cart = self.get_user_cart(user_id)
+        if not cart:
+            raise Exception(f"User {user_id} not found in cart list")
+        
+        cart.remove(course)
+    
+    def get_user_cart(self, user_id: int) -> Cart:
+        for cart in self.user_carts:
+            if user_id == cart['user_id']:
+                return cart['cart']
+            
+        return None
